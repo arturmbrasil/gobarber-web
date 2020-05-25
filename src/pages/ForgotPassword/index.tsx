@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { FiLogIn, FiMail } from 'react-icons/fi';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
@@ -14,12 +14,14 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import { Container, Content, AnimationContainer, Background } from './styles';
+import api from '../../services/api';
 
 interface ForgotPasswordFormData {
   email: string;
 }
 
 const ForgotPassword: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
 
   const { addToast } = useToast();
@@ -27,6 +29,8 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = useCallback(
     async (data: ForgotPasswordFormData) => {
       try {
+        setLoading(true);
+
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
@@ -40,6 +44,18 @@ const ForgotPassword: React.FC = () => {
         });
 
         // Recuperação de senha
+
+        await api.post('/password/forgot', {
+          email: data.email,
+        });
+
+        addToast({
+          type: 'success',
+          title: 'Email de recuperação enviado',
+          description:
+            'Enviamos um email para realizar a recuperação, cheque a sua caixa de entrada',
+        });
+
         // history.push('/dashboard');
       } catch (error) {
         if (error instanceof Yup.ValidationError) {
@@ -56,6 +72,8 @@ const ForgotPassword: React.FC = () => {
           description:
             'Ocorreu um erro ao tentar realizar a recuperação de senha, tente novamente.',
         });
+      } finally {
+        setLoading(false);
       }
     },
     [addToast],
