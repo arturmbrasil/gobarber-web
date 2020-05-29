@@ -14,6 +14,15 @@ export const HeaderContent = styled.div`
   display: flex;
   align-items: center;
 
+  a {
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
   > img {
     height: 80px;
   }
